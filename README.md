@@ -1,8 +1,8 @@
-# TecTech [![Build Status](http://jenkins.usrv.de:8081/buildStatus/icon?job=Tec%20Tech)](http://jenkins.usrv.de:8081/job/Tec%20Tech)
+# TecTech [![Build Status](http://jenkins.usrv.eu:8080/buildStatus/icon?job=Tec%20Tech)](http://jenkins.usrv.eu:8080/job/Tec%20Tech)
 GT additions EXTREME
 
 # WIKI
-https://github.com/JALGATeam/TecTechWiki/wiki
+https://github.com/Technus/TecTech/wiki
 
 # Jenkins Builds
 http://jenkins.usrv.eu:8080/job/Tec%20Tech/

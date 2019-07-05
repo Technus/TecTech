@@ -1,12 +1,12 @@
 package com.github.technus.tectech.thing.metaTileEntity.multi;
 
 import com.github.technus.tectech.CommonValues;
-import com.github.technus.tectech.loader.TecTechConfig;
 import com.github.technus.tectech.recipe.TT_recipe;
 import com.github.technus.tectech.thing.metaTileEntity.IConstructable;
 import com.github.technus.tectech.thing.metaTileEntity.hatch.GT_MetaTileEntity_Hatch_EnergyMulti;
 import com.github.technus.tectech.thing.metaTileEntity.hatch.GT_MetaTileEntity_Hatch_Holder;
 import com.github.technus.tectech.thing.metaTileEntity.multi.base.GT_MetaTileEntity_MultiblockBase_EM;
+import com.github.technus.tectech.thing.metaTileEntity.multi.base.HatchAdder;
 import com.github.technus.tectech.thing.metaTileEntity.multi.base.render.TT_RenderedTexture;
 import cpw.mods.fml.common.registry.GameRegistry;
 import gregtech.api.enums.ItemList;
@@ -30,6 +30,7 @@ import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import static com.github.technus.tectech.CommonValues.V;
 import static com.github.technus.tectech.CommonValues.VN;
@@ -65,7 +66,7 @@ public class GT_MetaTileEntity_EM_research extends GT_MetaTileEntity_MultiblockB
     };
     private static final Block[] blockType = new Block[]{sBlockCasingsTT, sBlockCasingsTT, sBlockCasingsTT};
     private static final byte[] blockMeta = new byte[]{1, 3, 2};
-    private static final String[] addingMethods = new String[]{"addClassicToMachineList", "addHolderToMachineList"};
+    private final HatchAdder[] addingMethods = new HatchAdder[]{this::addClassicToMachineList, this::addHolderToMachineList};
     private static final short[] casingTextures = new short[]{textureOffset + 1, textureOffset + 3};
     private static final Block[] blockTypeFallback = new Block[]{sBlockCasingsTT, Blocks.air};
     private static final byte[] blockMetaFallback = new byte[]{1, 0};
@@ -201,18 +202,7 @@ public class GT_MetaTileEntity_EM_research extends GT_MetaTileEntity_MultiblockB
                     if (GT_Utility.areStacksEqual(assRecipe.mResearchItem, holdItem, true)) {
                         tRecipe = assRecipe;
                         //if found
-                        for (GT_Recipe ttRecipe : TT_recipe.GT_Recipe_MapTT.sResearchableFakeRecipes.mRecipeList) {
-                            if (GT_Utility.areStacksEqual(ttRecipe.mInputs[0], holdItem, true)) {
-                                computationRequired = computationRemaining = ttRecipe.mDuration * 20L;
-                                mMaxProgresstime = 20;
-                                mEfficiencyIncrease = 10000;
-                                eRequiredData = (short) (ttRecipe.mSpecialValue >>> 16);
-                                eAmpereFlow = (short) (ttRecipe.mSpecialValue & 0xFFFF);
-                                mEUt = ttRecipe.mEUt;
-                                eHolders.get(0).getBaseMetaTileEntity().setActive(true);
-                                return true;
-                            }
-                        }
+                        if (iterateRecipes()) return true;
                     }
                 }
             }else if(ItemList.Tool_DataOrb.isStackEqual(itemStack, false, true)){
@@ -221,18 +211,7 @@ public class GT_MetaTileEntity_EM_research extends GT_MetaTileEntity_MultiblockB
                         aRecipe = assRecipeTT;
                         machineType=machine;
                         //if found
-                        for (GT_Recipe ttRecipe : TT_recipe.GT_Recipe_MapTT.sResearchableFakeRecipes.mRecipeList) {
-                            if (GT_Utility.areStacksEqual(ttRecipe.mInputs[0], holdItem, true)) {
-                                computationRequired = computationRemaining = ttRecipe.mDuration * 20L;
-                                mMaxProgresstime = 20;
-                                mEfficiencyIncrease = 10000;
-                                eRequiredData = (short) (ttRecipe.mSpecialValue >>> 16);
-                                eAmpereFlow = (short) (ttRecipe.mSpecialValue & 0xFFFF);
-                                mEUt = ttRecipe.mEUt;
-                                eHolders.get(0).getBaseMetaTileEntity().setActive(true);
-                                return true;
-                            }
-                        }
+                        if (iterateRecipes()) return true;
                     }
                 }
                 for (TT_recipe.TT_assLineRecipe assRecipeTT:TT_recipe.TT_Recipe_Map.sCrafterRecipes.recipeList()){
@@ -240,18 +219,7 @@ public class GT_MetaTileEntity_EM_research extends GT_MetaTileEntity_MultiblockB
                         aRecipe = assRecipeTT;
                         machineType=crafter;
                         //if found
-                        for (GT_Recipe ttRecipe : TT_recipe.GT_Recipe_MapTT.sResearchableFakeRecipes.mRecipeList) {
-                            if (GT_Utility.areStacksEqual(ttRecipe.mInputs[0], holdItem, true)) {
-                                computationRequired = computationRemaining = ttRecipe.mDuration * 20L;
-                                mMaxProgresstime = 20;
-                                mEfficiencyIncrease = 10000;
-                                eRequiredData = (short) (ttRecipe.mSpecialValue >>> 16);
-                                eAmpereFlow = (short) (ttRecipe.mSpecialValue & 0xFFFF);
-                                mEUt = ttRecipe.mEUt;
-                                eHolders.get(0).getBaseMetaTileEntity().setActive(true);
-                                return true;
-                            }
-                        }
+                        if (iterateRecipes()) return true;
                     }
                 }
             }
@@ -260,6 +228,22 @@ public class GT_MetaTileEntity_EM_research extends GT_MetaTileEntity_MultiblockB
         computationRequired=computationRemaining=0;
         for (GT_MetaTileEntity_Hatch_Holder r : eHolders) {
             r.getBaseMetaTileEntity().setActive(false);
+        }
+        return false;
+    }
+
+    private boolean iterateRecipes() {
+        for (GT_Recipe ttRecipe : TT_recipe.GT_Recipe_MapTT.sResearchableFakeRecipes.mRecipeList) {
+            if (GT_Utility.areStacksEqual(ttRecipe.mInputs[0], holdItem, true)) {
+                computationRequired = computationRemaining = ttRecipe.mDuration * 20L;
+                mMaxProgresstime = 20;
+                mEfficiencyIncrease = 10000;
+                eRequiredData = (short) (ttRecipe.mSpecialValue >>> 16);
+                eAmpereFlow = (short) (ttRecipe.mSpecialValue & 0xFFFF);
+                mEUt = ttRecipe.mEUt;
+                eHolders.get(0).getBaseMetaTileEntity().setActive(true);
+                return true;
+            }
         }
         return false;
     }
@@ -277,39 +261,150 @@ public class GT_MetaTileEntity_EM_research extends GT_MetaTileEntity_MultiblockB
         }
     }
 
+    private void makeStick(){
+        mInventory[1].setTagCompound(new NBTTagCompound());
+        mInventory[1].setStackDisplayName(GT_LanguageManager.getTranslation(tRecipe.mOutput.getDisplayName()) + " Construction Data");
+        GT_Utility.ItemNBT.setBookTitle(mInventory[1], GT_LanguageManager.getTranslation(tRecipe.mOutput.getDisplayName()) + " Construction Data");
+        NBTTagCompound tNBT = mInventory[1].getTagCompound();//code above makes it not null
+
+        tNBT.setTag("output", tRecipe.mOutput.writeToNBT(new NBTTagCompound()));
+        tNBT.setInteger("time", tRecipe.mDuration);
+        tNBT.setInteger("eu", tRecipe.mEUt);
+        for (int i = 0; i < tRecipe.mInputs.length; i++) {
+            tNBT.setTag(String.valueOf(i), tRecipe.mInputs[i].writeToNBT(new NBTTagCompound()));
+        }
+        for (int i = 0; i < tRecipe.mFluidInputs.length; i++) {
+            tNBT.setTag("f" + i, tRecipe.mFluidInputs[i].writeToNBT(new NBTTagCompound()));
+        }
+        tNBT.setString("author", EnumChatFormatting.BLUE + "Tec" + EnumChatFormatting.DARK_BLUE + "Tech" + EnumChatFormatting.WHITE + " Assembling Line Recipe Generator");
+        NBTTagList tNBTList = new NBTTagList();
+        tNBTList.appendTag(new NBTTagString("Construction plan for " + tRecipe.mOutput.stackSize + ' ' + GT_LanguageManager.getTranslation(tRecipe.mOutput.getDisplayName()) + ". Needed EU/t: " + tRecipe.mEUt + " Production time: " + tRecipe.mDuration / 20));
+        for (int i = 0; i < tRecipe.mInputs.length; i++) {
+            if (tRecipe.mInputs[i] != null) {
+                tNBTList.appendTag(new NBTTagString("Input Bus " + (i + 1) + ": " + tRecipe.mInputs[i].stackSize + ' ' + GT_LanguageManager.getTranslation(tRecipe.mInputs[i].getDisplayName())));
+            }
+        }
+        for (int i = 0; i < tRecipe.mFluidInputs.length; i++) {
+            if (tRecipe.mFluidInputs[i] != null) {
+                tNBTList.appendTag(new NBTTagString("Input Hatch " + (i + 1) + ": " + tRecipe.mFluidInputs[i].amount + "L " + GT_LanguageManager.getTranslation(tRecipe.mFluidInputs[i].getLocalizedName())));
+            }
+        }
+        tNBT.setTag("pages", tNBTList);
+    }
+
+    private static LinkedHashMap<String, String> lServerNames;
+    static {
+        try {
+            Class GT_Assemblyline_Server = Class.forName("gregtech.api.util.GT_Assemblyline_Server");
+            lServerNames=(LinkedHashMap<String, String>)GT_Assemblyline_Server.getField("lServerNames").get(null);
+        }catch (ClassNotFoundException|NoSuchFieldException|IllegalAccessException e){
+            lServerNames=null;
+        }
+    }
+
+    private void makeStick2(){
+        String s = tRecipe.mOutput.getDisplayName();
+        if (getBaseMetaTileEntity().isServerSide()) {
+            s = lServerNames.get(tRecipe.mOutput.getDisplayName());
+            if (s==null) {
+                s = tRecipe.mOutput.getDisplayName();
+            }
+        }
+        mInventory[1].setTagCompound(new NBTTagCompound());
+        mInventory[1].setStackDisplayName(s+" Construction Data");
+        GT_Utility.ItemNBT.setBookTitle(mInventory[1], s+" Construction Data");
+
+        NBTTagCompound tNBT = mInventory[1].getTagCompound();
+
+        tNBT.setTag("output", tRecipe.mOutput.writeToNBT(new NBTTagCompound()));
+        tNBT.setInteger("time", tRecipe.mDuration);
+        tNBT.setInteger("eu", tRecipe.mEUt);
+        for(int i = 0 ; i < tRecipe.mInputs.length ; i++){
+            tNBT.setTag(""+i, tRecipe.mInputs[i].writeToNBT(new NBTTagCompound()));
+        }
+        for(int i = 0 ; i < tRecipe.mOreDictAlt.length ; i++){
+            if (tRecipe.mOreDictAlt[i] != null && tRecipe.mOreDictAlt[i].length > 0) {
+                tNBT.setInteger("a" + i, tRecipe.mOreDictAlt[i].length);
+                for (int j = 0; j < tRecipe.mOreDictAlt[i].length; j++) {
+                    tNBT.setTag("a" + i + ":" + j, tRecipe.mOreDictAlt[i][j].writeToNBT(new NBTTagCompound()));
+                }
+            }
+        }
+        for(int i = 0 ; i < tRecipe.mFluidInputs.length ; i++){
+            tNBT.setTag("f"+i, tRecipe.mFluidInputs[i].writeToNBT(new NBTTagCompound()));
+        }
+        tNBT.setString("author", EnumChatFormatting.BLUE + "Tec" + EnumChatFormatting.DARK_BLUE + "Tech" + EnumChatFormatting.WHITE + ' ' + machineType+ " Recipe Generator");
+        NBTTagList tNBTList = new NBTTagList();
+        s=tRecipe.mOutput.getDisplayName();
+        if (getBaseMetaTileEntity().isServerSide()) {
+            s = lServerNames.get(tRecipe.mOutput.getDisplayName());
+            if (s==null) {
+                s = tRecipe.mOutput.getDisplayName();
+            }
+        }
+        tNBTList.appendTag(new NBTTagString("Construction plan for "+tRecipe.mOutput.stackSize+" "+s+". Needed EU/t: "+tRecipe.mEUt+" Production time: "+(tRecipe.mDuration/20)));
+        for(int i=0;i<tRecipe.mInputs.length;i++){
+            if (tRecipe.mOreDictAlt[i] != null) {
+                int count = 0;
+                StringBuilder tBuilder = new StringBuilder("Input Bus "+(i+1)+": ");
+                for (ItemStack tStack : tRecipe.mOreDictAlt[i]) {
+                    if (tStack != null) {
+                        s=tStack.getDisplayName();
+                        if (getBaseMetaTileEntity().isServerSide()) {
+                            s=lServerNames.get(tStack.getDisplayName());
+                            if (s==null)
+                                s=tStack.getDisplayName();
+                        }
+
+
+                        tBuilder.append(count == 0 ? "" : "\nOr ").append(tStack.stackSize).append(" ").append(s);
+                        count++;
+                    }
+                }
+                if (count > 0) tNBTList.appendTag(new NBTTagString(tBuilder.toString()));
+            } else if(tRecipe.mInputs[i]!=null){
+                s=tRecipe.mInputs[i].getDisplayName();
+                if (getBaseMetaTileEntity().isServerSide()) {
+                    s = lServerNames.get(tRecipe.mInputs[i].getDisplayName());
+                    if (s==null) {
+                        s = tRecipe.mInputs[i].getDisplayName();
+                    }
+                }
+                tNBTList.appendTag(new NBTTagString("Input Bus "+(i+1)+": "+tRecipe.mInputs[i].stackSize+" "+s));
+            }
+        }
+        for(int i=0;i<tRecipe.mFluidInputs.length;i++){
+            if(tRecipe.mFluidInputs[i]!=null){
+                s=tRecipe.mFluidInputs[i].getLocalizedName();
+                if (getBaseMetaTileEntity().isServerSide()) {
+                    s = lServerNames.get(tRecipe.mFluidInputs[i].getLocalizedName());
+                    if (s==null) {
+                        s = tRecipe.mFluidInputs[i].getLocalizedName();
+                    }
+                }
+                tNBTList.appendTag(new NBTTagString("Input Hatch "+(i+1)+": "+tRecipe.mFluidInputs[i].amount+"L "+s));
+            }
+        }
+        tNBT.setTag("pages", tNBTList);
+
+        mInventory[1].setTagCompound(tNBT);
+    }
+
     @Override
     public void outputAfterRecipe_EM() {
         if(!eHolders.isEmpty()) {
             if (tRecipe != null && ItemList.Tool_DataStick.isStackEqual(mInventory[1], false, true)){
                 eHolders.get(0).getBaseMetaTileEntity().setActive(false);
                 eHolders.get(0).mInventory[0] = null;
-
-                mInventory[1].setStackDisplayName(GT_LanguageManager.getTranslation(tRecipe.mOutput.getDisplayName()) + " Construction Data");
-                NBTTagCompound tNBT = mInventory[1].getTagCompound();//code above makes it not null
-
-                tNBT.setTag("output", tRecipe.mOutput.writeToNBT(new NBTTagCompound()));
-                tNBT.setInteger("time", tRecipe.mDuration);
-                tNBT.setInteger("eu", tRecipe.mEUt);
-                for (int i = 0; i < tRecipe.mInputs.length; i++) {
-                    tNBT.setTag(String.valueOf(i), tRecipe.mInputs[i].writeToNBT(new NBTTagCompound()));
-                }
-                for (int i = 0; i < tRecipe.mFluidInputs.length; i++) {
-                    tNBT.setTag("f" + i, tRecipe.mFluidInputs[i].writeToNBT(new NBTTagCompound()));
-                }
-                tNBT.setString("author", EnumChatFormatting.BLUE + "Tec" + EnumChatFormatting.DARK_BLUE + "Tech" + EnumChatFormatting.WHITE + " Assembling Line Recipe Generator");
-                NBTTagList tNBTList = new NBTTagList();
-                tNBTList.appendTag(new NBTTagString("Construction plan for " + tRecipe.mOutput.stackSize + ' ' + GT_LanguageManager.getTranslation(tRecipe.mOutput.getDisplayName()) + ". Needed EU/t: " + tRecipe.mEUt + " Production time: " + tRecipe.mDuration / 20));
-                for (int i = 0; i < tRecipe.mInputs.length; i++) {
-                    if (tRecipe.mInputs[i] != null) {
-                        tNBTList.appendTag(new NBTTagString("Input Bus " + (i + 1) + ": " + tRecipe.mInputs[i].stackSize + ' ' + GT_LanguageManager.getTranslation(tRecipe.mInputs[i].getDisplayName())));
+                if (lServerNames == null) {
+                    makeStick();
+                } else {
+                    try {
+                        makeStick2();
+                    }catch (NoSuchFieldError e){
+                        makeStick();
                     }
                 }
-                for (int i = 0; i < tRecipe.mFluidInputs.length; i++) {
-                    if (tRecipe.mFluidInputs[i] != null) {
-                        tNBTList.appendTag(new NBTTagString("Input Hatch " + (i + 1) + ": " + tRecipe.mFluidInputs[i].amount + "L " + GT_LanguageManager.getTranslation(tRecipe.mFluidInputs[i].getLocalizedName())));
-                    }
-                }
-                tNBT.setTag("pages", tNBTList);
             }else if (aRecipe != null && ItemList.Tool_DataOrb.isStackEqual(mInventory[1], false, true)) {
                 eHolders.get(0).getBaseMetaTileEntity().setActive(false);
                 eHolders.get(0).mInventory[0] = null;
@@ -393,16 +488,6 @@ public class GT_MetaTileEntity_EM_research extends GT_MetaTileEntity_MultiblockB
             return eHolders.add((GT_MetaTileEntity_Hatch_Holder) aMetaTileEntity);
         }
         return false;
-    }
-
-    public static void run() {
-        try {
-            adderMethodMap.put("addHolderToMachineList", GT_MetaTileEntity_EM_research.class.getMethod("addHolderToMachineList", IGregTechTileEntity.class, int.class));
-        } catch (NoSuchMethodException e) {
-            if (TecTechConfig.DEBUG_MODE) {
-                e.printStackTrace();
-            }
-        }
     }
 
     @Override

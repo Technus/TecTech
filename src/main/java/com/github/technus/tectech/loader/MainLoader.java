@@ -10,12 +10,14 @@ import com.github.technus.tectech.loader.entity.EntityLoader;
 import com.github.technus.tectech.loader.gui.CreativeTabTecTech;
 import com.github.technus.tectech.loader.gui.ModGuiHandler;
 import com.github.technus.tectech.loader.mechanics.ElementalLoader;
+import com.github.technus.tectech.loader.network.NetworkDispatcher;
 import com.github.technus.tectech.loader.recipe.RecipeLoader;
+import com.github.technus.tectech.loader.thing.ComponentLoader;
 import com.github.technus.tectech.loader.thing.MachineLoader;
 import com.github.technus.tectech.loader.thing.ThingsLoader;
 import com.github.technus.tectech.thing.casing.TT_Container_Casings;
 import com.github.technus.tectech.thing.metaTileEntity.Textures;
-import com.github.technus.tectech.thing.metaTileEntity.multi.base.network.RotationPacketDispatcher;
+import com.github.technus.tectech.thing.metaTileEntity.multi.GT_MetaTileEntity_EM_collider;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ProgressManager;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -26,6 +28,7 @@ import gregtech.api.enums.GT_Values;
 import gregtech.api.enums.Materials;
 import gregtech.api.util.GT_ModHandler;
 import gregtech.api.util.GT_Recipe;
+import gregtech.api.util.GT_Utility;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
@@ -33,6 +36,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -42,7 +46,6 @@ import static com.github.technus.tectech.compatibility.thaumcraft.elementalMatte
 import static com.github.technus.tectech.compatibility.thaumcraft.thing.metaTileEntity.multi.EssentiaCompat.essentiaContainerCompat;
 import static com.github.technus.tectech.loader.TecTechConfig.DEBUG_MODE;
 import static com.github.technus.tectech.loader.gui.CreativeTabTecTech.creativeTabTecTech;
-import static gregtech.api.enums.Dyes.*;
 import static gregtech.api.enums.GT_Values.W;
 
 public final class MainLoader {
@@ -56,19 +59,10 @@ public final class MainLoader {
             GT_Values.VN[i]=VN[i];
             GT_Values.VOLTAGE_NAMES[i]=VOLTAGE_NAMES[i];
         }
+        new ComponentLoader();
     }
 
     public static void preLoad(){
-        //Set proper values in gt arrays
-        dyeLightBlue.mRGBa[0]=96;
-        dyeLightBlue.mRGBa[1]=128;
-        dyeLightBlue.mRGBa[2]=255;
-        dyeBlue.mRGBa[0]=0;
-        dyeBlue.mRGBa[1]=32;
-        dyeBlue.mRGBa[2]=255;
-        MACHINE_METAL.mRGBa[0]=210;
-        MACHINE_METAL.mRGBa[1]=220;
-        MACHINE_METAL.mRGBa[2]=255;
 
         //set expanded texture arrays for tiers
         try {
@@ -111,7 +105,7 @@ public final class MainLoader {
         LOGGER.info("Damage types addition Done");
 
         progressBarLoad.step("Register Packet Dispatcher");
-        new RotationPacketDispatcher();
+        new NetworkDispatcher();
         LOGGER.info("Packet Dispatcher registered");
 
         progressBarLoad.step("Register GUI Handler");
@@ -123,7 +117,7 @@ public final class MainLoader {
     }
 
     public static void postLoad() {
-        ProgressManager.ProgressBar progressBarPostLoad = ProgressManager.push("TecTech Post Loader", 7);
+        ProgressManager.ProgressBar progressBarPostLoad = ProgressManager.push("TecTech Post Loader", 6);
 
         progressBarPostLoad.step("Dreamcraft Compatibility");
         if(Loader.isModLoaded(Reference.DREAMCRAFT)){
@@ -159,13 +153,6 @@ public final class MainLoader {
         progressBarPostLoad.step("Register Extra Hazmat Suits");
         registerExtraHazmats();
         TecTech.LOGGER.info("Hazmat additions done");
-
-
-        progressBarPostLoad.step("Nerf fusion recipes");
-        if (TecTech.configTecTech.NERF_FUSION) {
-            FixBrokenFusionRecipes();
-        }
-        TecTech.LOGGER.info("Fusion nerf done");
 
         progressBarPostLoad.step("Nerf blocks blast resistance");
         fixBlocks();
@@ -246,6 +233,18 @@ public final class MainLoader {
         //todo add GC GS stuff
     }
 
+    public static void addAfterGregTechPostLoadRunner() {
+        GregTech_API.sAfterGTPostload.add(new Runnable() {
+            @Override
+            public void run() {
+                if(TecTech.configTecTech.NERF_FUSION) {
+                    FixBrokenFusionRecipes();
+                }
+                GT_MetaTileEntity_EM_collider.setValues(getFuelValue(Materials.Helium.getPlasma(125)));
+            }
+        });
+    }
+
     private static void FixBrokenFusionRecipes() {
         HashMap<Fluid, Fluid> binds = new HashMap<>();
         for (Materials material : Materials.values()) {
@@ -280,9 +279,33 @@ public final class MainLoader {
                 if (DEBUG_MODE) {
                     LOGGER.info("Nerfing Recipe " + r.mFluidOutputs[0].getUnlocalizedName());
                 }
-                r.mFluidOutputs[0] = new FluidStack(fluid, r.mFluidInputs[0].amount);
+                r.mFluidOutputs[0] = new FluidStack(fluid, r.mFluidOutputs[0].amount);
+            }
+            fluid = binds.get(r.mFluidInputs[0].getFluid());
+            if (fluid != null) {
+                if (DEBUG_MODE) {
+                    LOGGER.info("Fixing plasma use in Recipe " + r.mFluidInputs[0].getUnlocalizedName());
+                }
+                r.mFluidInputs[0] = new FluidStack(fluid, r.mFluidInputs[0].amount);
+            }
+            fluid = binds.get(r.mFluidInputs[1].getFluid());
+            if (fluid != null) {
+                if (DEBUG_MODE) {
+                    LOGGER.info("Fixing plasma use in Recipe " + r.mFluidInputs[1].getUnlocalizedName());
+                }
+                r.mFluidInputs[1] = new FluidStack(fluid, r.mFluidInputs[1].amount);
             }
         }
+    }
+
+    public static int getFuelValue(FluidStack aLiquid) {
+        if (aLiquid == null || GT_Recipe.GT_Recipe_Map.sTurbineFuels == null) return 0;
+        FluidStack tLiquid;
+        Collection<GT_Recipe> tRecipeList = GT_Recipe.GT_Recipe_Map.sPlasmaFuels.mRecipeList;
+        if (tRecipeList != null) for (GT_Recipe tFuel : tRecipeList)
+            if ((tLiquid = GT_Utility.getFluidForFilledItem(tFuel.getRepresentativeInput(0), true)) != null)
+                if (aLiquid.isFluidEqual(tLiquid)) return tFuel.mSpecialValue;
+        return 0;
     }
 
     private static void fixBlocks(){

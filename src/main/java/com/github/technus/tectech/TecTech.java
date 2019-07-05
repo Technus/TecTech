@@ -2,13 +2,18 @@ package com.github.technus.tectech;
 
 import com.github.technus.tectech.loader.MainLoader;
 import com.github.technus.tectech.loader.TecTechConfig;
+import com.github.technus.tectech.mechanics.ConvertFloat;
+import com.github.technus.tectech.mechanics.ConvertInteger;
 import com.github.technus.tectech.mechanics.elementalMatter.core.commands.GiveEM;
 import com.github.technus.tectech.mechanics.elementalMatter.core.commands.ListEM;
 import com.github.technus.tectech.proxy.CommonProxy;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.*;
+import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import eu.usrv.yamcore.auxiliary.IngameErrorLog;
 import eu.usrv.yamcore.auxiliary.LogHelper;
 
@@ -71,6 +76,7 @@ public class TecTech {
         hasCOFH = Loader.isModLoaded(Reference.COFHCORE);
 
         MainLoader.load();
+        MainLoader.addAfterGregTechPostLoadRunner();
     }
 
     @Mod.EventHandler
@@ -80,14 +86,11 @@ public class TecTech {
 
     @Mod.EventHandler
     public void serverLoad(FMLServerStartingEvent pEvent) {
+        pEvent.registerServerCommand(new ConvertInteger());
+        pEvent.registerServerCommand(new ConvertFloat());
         pEvent.registerServerCommand(new ListEM());
         if(DEBUG_MODE) {
             pEvent.registerServerCommand(new GiveEM());
         }
-    }
-
-    @Mod.EventHandler
-    public void onServerAboutToStart(FMLServerAboutToStartEvent ev) {
-
     }
 }
