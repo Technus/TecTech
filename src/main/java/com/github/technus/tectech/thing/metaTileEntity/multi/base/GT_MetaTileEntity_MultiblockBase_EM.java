@@ -10,8 +10,8 @@ import com.github.technus.tectech.mechanics.elementalMatter.core.stacks.cElement
 import com.github.technus.tectech.mechanics.elementalMatter.core.tElementalException;
 import com.github.technus.tectech.thing.metaTileEntity.IFrontRotation;
 import com.github.technus.tectech.thing.metaTileEntity.hatch.*;
-import com.github.technus.tectech.loader.network.RotationMessage;
-import com.github.technus.tectech.loader.network.NetworkDispatcher;
+import com.github.technus.tectech.thing.metaTileEntity.RotationMessage;
+import com.github.technus.tectech.loader.NetworkDispatcher;
 import com.github.technus.tectech.thing.metaTileEntity.multi.base.render.TT_RenderedTexture;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -39,8 +39,7 @@ import net.minecraftforge.fluids.FluidStack;
 import java.util.ArrayList;
 
 import static com.github.technus.tectech.CommonValues.*;
-import static com.github.technus.tectech.Util.StructureCheckerExtreme;
-import static com.github.technus.tectech.Util.getTier;
+import static com.github.technus.tectech.Util.*;
 import static com.github.technus.tectech.loader.TecTechConfig.DEBUG_MODE;
 import static com.github.technus.tectech.thing.casing.GT_Block_CasingsTT.texturePage;
 
@@ -48,12 +47,6 @@ import static com.github.technus.tectech.thing.casing.GT_Block_CasingsTT.texture
  * Created by danie_000 on 27.10.2016.
  */
 public abstract class GT_MetaTileEntity_MultiblockBase_EM extends GT_MetaTileEntity_MultiBlockBase implements IFrontRotation {
-    //region Constants
-    //Placeholders for nothing feel free to use
-    public static final ItemStack[] nothingI = new ItemStack[0];
-    public static final FluidStack[] nothingF = new FluidStack[0];
-    //endregion
-
     //region Client side variables (static - one per class)
 
     //Front icon holders - static so it is default one for my blocks
@@ -116,12 +109,12 @@ public abstract class GT_MetaTileEntity_MultiblockBase_EM extends GT_MetaTileEnt
     //if u need to force some things to be fixed - u might need to override doRandomMaintenanceDamage
     protected byte minRepairStatus = 3;
 
+    //functionality toggles - changed by buttons in gui also
+    public boolean ePowerPass = false, eSafeVoid = false;
+
     //endregion
 
     //region READ ONLY unless u really need to change it
-
-    //functionality toggles - changed by buttons in gui also
-    protected boolean ePowerPass = false, eSafeVoid = false;
 
     //max amperes machine can take in after computing it to the lowest tier (exchange packets to min tier count)
     protected long eMaxAmpereFlow = 0,eMaxAmpereGen=0;
@@ -191,7 +184,7 @@ public abstract class GT_MetaTileEntity_MultiblockBase_EM extends GT_MetaTileEnt
      * @param maxC
      * @return
      */
-    public final AxisAlignedBB getBoundingBox(int minA,int minB,int minC,int maxA,int maxB,int maxC){
+    public final AxisAlignedBB getBoundingBox(double minA,double minB,double minC,double maxA,double maxB,double maxC){
         double[] offSetsMin= getTranslatedOffsets(minA,minB,minC);
         double[] offSetsMax= getTranslatedOffsets(maxA,maxB,maxC);
         for (int i=0;i<3;i++){
@@ -348,6 +341,139 @@ public abstract class GT_MetaTileEntity_MultiblockBase_EM extends GT_MetaTileEnt
         return result;
     }
 
+    public final int[] getTranslatedOffsets(int a, int b, int c){
+        int[] result=new int[3];
+        switch (getBaseMetaTileEntity().getFrontFacing() +(frontRotation<<3)){
+            case 4:
+                result[0]=  c;
+                result[2]=  a;
+                result[1]=- b;
+                break;
+            case 12:
+                result[0]=  c;
+                result[1]=- a;
+                result[2]=- b;
+                break;
+            case 20:
+                result[0]=  c;
+                result[2]=- a;
+                result[1]=  b;
+                break;
+            case 28:
+                result[0]=  c;
+                result[1]=  a;
+                result[2]=  b;
+                break;
+
+            case 3:
+                result[0]=  a;
+                result[2]=- c;
+                result[1]=- b;
+                break;
+            case 11:
+                result[1]=- a;
+                result[2]=- c;
+                result[0]=- b;
+                break;
+            case 19:
+                result[0]=- a;
+                result[2]=- c;
+                result[1]=  b;
+                break;
+            case 27:
+                result[1]=  a;
+                result[2]=- c;
+                result[0]=  b;
+                break;
+
+            case 5:
+                result[0]=- c;
+                result[2]=- a;
+                result[1]=- b;
+                break;
+            case 13:
+                result[0]=- c;
+                result[1]=- a;
+                result[2]=  b;
+                break;
+            case 21:
+                result[0]=- c;
+                result[2]=  a;
+                result[1]=  b;
+                break;
+            case 29:
+                result[0]=- c;
+                result[1]=  a;
+                result[2]=- b;
+                break;
+
+            case 2:
+                result[0]=- a;
+                result[2]=  c;
+                result[1]=- b;
+                break;
+            case 10:
+                result[1]=- a;
+                result[2]=  c;
+                result[0]=  b;
+                break;
+            case 18:
+                result[0]=  a;
+                result[2]=  c;
+                result[1]=  b;
+                break;
+            case 26:
+                result[1]=  a;
+                result[2]=  c;
+                result[0]=- b;
+                break;
+            //Things get odd if the block faces up or down...
+            case 1:
+                result[0]=  a;
+                result[2]=  b;
+                result[1]=- c;
+                break;//similar to 3
+            case 9:
+                result[2]=  a;
+                result[0]=- b;
+                result[1]=- c;
+                break;//similar to 3
+            case 17:
+                result[0]=- a;
+                result[2]=- b;
+                result[1]=- c;
+                break;//similar to 3
+            case 25:
+                result[2]=- a;
+                result[0]=  b;
+                result[1]=- c;
+                break;//similar to 3
+
+            case 0:
+                result[0]=- a;
+                result[2]=  b;
+                result[1]=  c;
+                break;//similar to 2
+            case 8:
+                result[2]=  a;
+                result[0]=  b;
+                result[1]=  c;
+                break;
+            case 16:
+                result[0]=  a;
+                result[2]=- b;
+                result[1]=  c;
+                break;
+            case 24:
+                result[2]=- a;
+                result[0]=- b;
+                result[0]=- b;
+                result[1]=+ c;
+                break;
+        }
+        return result;
+    }
+
     //can be used to check structures of multi-blocks larger than one chunk, but...
     //ALL THE HATCHES AND THE CONTROLLER SHOULD BE IN ONE CHUNK OR IN LOADED CHUNKS
     //@Deprecated
@@ -364,7 +490,7 @@ public abstract class GT_MetaTileEntity_MultiblockBase_EM extends GT_MetaTileEnt
             String[][] structure,//0-9 casing, +- air no air, a-z ignore
             Block[] blockType,//use numbers 0-9 for casing types
             byte[] blockMeta,//use numbers 0-9 for casing types
-            HatchAdder[] addingMethods,
+            IHatchAdder[] addingMethods,
             short[] casingTextures,
             Block[] blockTypeFallback,//use numbers 0-9 for casing types
             byte[] blockMetaFallback,//use numbers 0-9 for casing types
@@ -441,7 +567,7 @@ public abstract class GT_MetaTileEntity_MultiblockBase_EM extends GT_MetaTileEnt
                 EnumChatFormatting.YELLOW+ ":" +
                 EnumChatFormatting.AQUA+paramID +
                 EnumChatFormatting.YELLOW+ ":"+
-                EnumChatFormatting.AQUA+"I  "+parametrization.getStatusIn(hatchNo, paramID).name);
+                EnumChatFormatting.AQUA+"I  "+parametrization.getStatusIn(hatchNo, paramID).name.get());
         list.add(EnumChatFormatting.WHITE+"Value: "+
                 EnumChatFormatting.AQUA+ Util.doubleToString(parametrization.getIn(hatchNo,paramID)));
         try{
@@ -465,7 +591,7 @@ public abstract class GT_MetaTileEntity_MultiblockBase_EM extends GT_MetaTileEnt
                 EnumChatFormatting.YELLOW+ ":" +
                 EnumChatFormatting.AQUA+paramID +
                 EnumChatFormatting.YELLOW+ ":"+
-                EnumChatFormatting.AQUA+"O "+parametrization.getStatusOut(hatchNo, paramID).name);
+                EnumChatFormatting.AQUA+"O "+parametrization.getStatusOut(hatchNo, paramID).name.get());
         list.add(EnumChatFormatting.WHITE+"Value: "+
                 EnumChatFormatting.AQUA+Util.doubleToString(parametrization.getOut(hatchNo,paramID)));
         try{
@@ -675,15 +801,9 @@ public abstract class GT_MetaTileEntity_MultiblockBase_EM extends GT_MetaTileEnt
                     hatch.getBaseMetaTileEntity().setActive(false);
                 }
             }
+            cleanOutputEM_EM();
             if (ePowerPass && getEUVar()>V[3] || eDismantleBoom && mMaxProgresstime > 0 && areChunksAroundLoaded_EM()) {
                 explodeMultiblock();
-            }
-            if (outputEM != null) {
-                for (cElementalInstanceStackMap output : outputEM) {
-                    if (output != null && output.hasStacks()) {
-                        explodeMultiblock();
-                    }
-                }
             }
         } catch (Exception e) {
             if (DEBUG_MODE) {
@@ -1314,8 +1434,8 @@ public abstract class GT_MetaTileEntity_MultiblockBase_EM extends GT_MetaTileEnt
                 eOutputData.clear();
                 eInputData.clear();
 
-                if (getBaseMetaTileEntity() instanceof BaseTileEntity) {
-                    ((BaseTileEntity) getBaseMetaTileEntity()).ignoreUnloadedChunks = mMachine;
+                if (aBaseMetaTileEntity instanceof BaseTileEntity) {
+                    ((BaseTileEntity) aBaseMetaTileEntity).ignoreUnloadedChunks = mMachine;
                 }
                 mMachine = checkMachine(aBaseMetaTileEntity, mInventory[1]);
 
@@ -1431,9 +1551,6 @@ public abstract class GT_MetaTileEntity_MultiblockBase_EM extends GT_MetaTileEnt
                                 eMaxAmpereGen += hatch.maxEUOutput() / maxEUoutputMin * hatch.Amperes;
                             }
                         }
-                        if (getEUVar() > maxEUStore()) {
-                            setEUVar(maxEUStore());
-                        }
                     } else {
                         maxEUinputMin = 0;
                         maxEUinputMax = 0;
@@ -1441,7 +1558,9 @@ public abstract class GT_MetaTileEntity_MultiblockBase_EM extends GT_MetaTileEnt
                         maxEUoutputMin = 0;
                         maxEUoutputMax = 0;
                         eMaxAmpereGen = 0;
-                        setEUVar(0);
+                    }
+                    if (getEUVar() > maxEUStore()) {
+                        setEUVar(maxEUStore());
                     }
 
                     for (GT_MetaTileEntity_Hatch_Uncertainty hatch : eUncertainHatches) {
@@ -1985,35 +2104,14 @@ public abstract class GT_MetaTileEntity_MultiblockBase_EM extends GT_MetaTileEnt
             mass += tHatch.overflowMatter;
             tHatch.overflowMatter = 0;
         }
-        if (mass > 0) {
-            if (eMufflerHatches.size() < 1) {
-                explodeMultiblock();
-            }
-            mass /= eMufflerHatches.size();
-            for (GT_MetaTileEntity_Hatch_OverflowElemental dump : eMufflerHatches) {
-                if (dump.addOverflowMatter(mass)) {
-                    explodeMultiblock();
-                }
-            }
-        }
+        cleanMassEM_EM(mass);
     }
 
     public void cleanHatchContentEM_EM(GT_MetaTileEntity_Hatch_ElementalContainer target) {
         if (target == null) {
             return;
         }
-        float mass = target.getContainerHandler().getMass();
-        if (mass > 0) {
-            if (eMufflerHatches.size() < 1) {
-                explodeMultiblock();
-            }
-            mass /= eMufflerHatches.size();
-            for (GT_MetaTileEntity_Hatch_OverflowElemental dump : eMufflerHatches) {
-                if (dump.addOverflowMatter(mass)) {
-                    explodeMultiblock();
-                }
-            }
-        }
+        cleanMassEM_EM(target.getContainerHandler().getMass());
     }
 
     public void cleanStackEM_EM(cElementalInstanceStack target) {
@@ -2026,13 +2124,19 @@ public abstract class GT_MetaTileEntity_MultiblockBase_EM extends GT_MetaTileEnt
     public void cleanMassEM_EM(float mass) {
         if (mass > 0) {
             if (eMufflerHatches.size() < 1) {
+                TecTech.anomalyHandler.addAnomaly(getBaseMetaTileEntity(),mass);
                 explodeMultiblock();
+                return;
             }
             mass /= eMufflerHatches.size();
+            boolean shouldExplode=false;
             for (GT_MetaTileEntity_Hatch_OverflowElemental dump : eMufflerHatches) {
                 if (dump.addOverflowMatter(mass)) {
-                    explodeMultiblock();
+                    shouldExplode=true;
                 }
+            }
+            if(shouldExplode){
+                explodeMultiblock();
             }
         }
     }
@@ -2047,19 +2151,8 @@ public abstract class GT_MetaTileEntity_MultiblockBase_EM extends GT_MetaTileEnt
                 mass += map.getMass();
             }
         }
-
-        if (mass > 0) {
-            if (eMufflerHatches.size() < 1) {
-                explodeMultiblock();
-            }
-            mass /= eMufflerHatches.size();
-            for (GT_MetaTileEntity_Hatch_OverflowElemental dump : eMufflerHatches) {
-                if (dump.addOverflowMatter(mass)) {
-                    explodeMultiblock();
-                }
-            }
-        }
         outputEM = null;
+        cleanMassEM_EM(mass);
     }
     //endregion
 

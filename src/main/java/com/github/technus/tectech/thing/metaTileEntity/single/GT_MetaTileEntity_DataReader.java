@@ -32,12 +32,13 @@ import java.util.Map;
 
 import static com.github.technus.tectech.CommonValues.V;
 import static com.github.technus.tectech.Reference.MODID;
+import static com.github.technus.tectech.recipe.TT_recipeAdder.nullItem;
 
 /**
  * Created by Tec on 23.03.2017.
  */
 public class GT_MetaTileEntity_DataReader extends GT_MetaTileEntity_BasicMachine {
-    private static final HashMap<Util.ItemStack_NoNBT,ArrayList<DataRender>> RENDER_REGISTRY =new HashMap<>();
+    private static final HashMap<Util.ItemStack_NoNBT,ArrayList<IDataRender>> RENDER_REGISTRY =new HashMap<>();
     private static GT_RenderedTexture READER_ONLINE, READER_OFFLINE;
 
     public GT_MetaTileEntity_DataReader(int aID, String aName, String aNameRegional, int aTier) {
@@ -90,8 +91,8 @@ public class GT_MetaTileEntity_DataReader extends GT_MetaTileEntity_BasicMachine
             return DID_NOT_FIND_RECIPE;
         }
         ItemStack input=getInputAt(0);
-        ArrayList<DataRender> renders=getRenders(new Util.ItemStack_NoNBT(input));
-        for(DataRender render:renders){
+        ArrayList<IDataRender> renders=getRenders(new Util.ItemStack_NoNBT(input));
+        for(IDataRender render:renders){
             if(render.canRender(input,mTier)){
                 mOutputItems[0]=input.copy();
                 input.stackSize-=1;
@@ -174,19 +175,19 @@ public class GT_MetaTileEntity_DataReader extends GT_MetaTileEntity_BasicMachine
         return maxEUInput()*4L;
     }
 
-    public static void addDataRender(Util.ItemStack_NoNBT stack, DataRender render){
-        ArrayList<DataRender> renders = RENDER_REGISTRY.computeIfAbsent(stack, k -> new ArrayList<>());
+    public static void addDataRender(Util.ItemStack_NoNBT stack, IDataRender render){
+        ArrayList<IDataRender> renders = RENDER_REGISTRY.computeIfAbsent(stack, k -> new ArrayList<>());
         if(FMLCommonHandler.instance().getEffectiveSide().isClient()) {
             render.loadResources();
         }
         renders.add(render);
     }
 
-    public static ArrayList<DataRender> getRenders(Util.ItemStack_NoNBT stack){
+    public static ArrayList<IDataRender> getRenders(Util.ItemStack_NoNBT stack){
         return RENDER_REGISTRY.get(stack);
     }
 
-    public interface DataRender{
+    public interface IDataRender {
         @SideOnly(Side.CLIENT)
         void loadResources();
         @SideOnly(Side.CLIENT)
@@ -203,7 +204,7 @@ public class GT_MetaTileEntity_DataReader extends GT_MetaTileEntity_BasicMachine
     }
 
     public static void run(){
-        addDataRender(new Util.ItemStack_NoNBT(ItemList.Tool_DataStick.get(1)),new DataRender() {
+        addDataRender(new Util.ItemStack_NoNBT(ItemList.Tool_DataStick.get(1)),new IDataRender() {
             @SideOnly(Side.CLIENT)
             private ResourceLocation bg;
             @SideOnly(Side.CLIENT)
@@ -241,7 +242,7 @@ public class GT_MetaTileEntity_DataReader extends GT_MetaTileEntity_BasicMachine
                     }
                     if(array.size()>0){
                         slots2.put(new GT_Slot_Holo(null,0,17+(i&0x3)*18,19+(i>>2)*18,false,false,64),
-                                array.toArray(new ItemStack[0]));
+                                array.toArray(nullItem));
                     }
                 }
                 for (int i = 0; i < 4; i++) {

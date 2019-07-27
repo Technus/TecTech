@@ -2,8 +2,7 @@ package com.github.technus.tectech.thing.metaTileEntity.pipe;
 
 import com.github.technus.tectech.CommonValues;
 import com.github.technus.tectech.TecTech;
-import com.github.technus.tectech.loader.network.PipeActivityMessage;
-import com.github.technus.tectech.loader.network.NetworkDispatcher;
+import com.github.technus.tectech.loader.NetworkDispatcher;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.GT_Mod;
@@ -108,7 +107,7 @@ public class GT_MetaTileEntity_Pipe_Data extends MetaPipeEntity implements IConn
 
     @Override
     public void onFirstTick(IGregTechTileEntity aBaseMetaTileEntity) {
-        if(getBaseMetaTileEntity().isClientSide()){
+        if(aBaseMetaTileEntity.isClientSide()){
             NetworkDispatcher.INSTANCE.sendToServer(new PipeActivityMessage.PipeActivityQuery(this));
         }
         onPostTick(aBaseMetaTileEntity, 31);

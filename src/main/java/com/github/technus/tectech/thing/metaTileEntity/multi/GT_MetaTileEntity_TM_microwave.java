@@ -4,8 +4,6 @@ import com.github.technus.tectech.CommonValues;
 import com.github.technus.tectech.Reference;
 import com.github.technus.tectech.thing.metaTileEntity.IConstructable;
 import com.github.technus.tectech.thing.metaTileEntity.multi.base.*;
-import com.github.technus.tectech.thing.metaTileEntity.multi.base.NameFunction;
-import com.github.technus.tectech.thing.metaTileEntity.multi.base.StatusFunction;
 import com.github.technus.tectech.thing.metaTileEntity.multi.base.render.TT_RenderedTexture;
 import gregtech.api.enums.Textures;
 import gregtech.api.interfaces.ITexture;
@@ -27,6 +25,7 @@ import java.util.HashSet;
 
 import static com.github.technus.tectech.Util.StructureBuilderExtreme;
 import static com.github.technus.tectech.loader.MainLoader.microwaving;
+import static com.github.technus.tectech.recipe.TT_recipeAdder.nullItem;
 import static com.github.technus.tectech.thing.metaTileEntity.multi.base.LedStatus.*;
 import static gregtech.api.GregTech_API.sBlockCasings4;
 
@@ -48,7 +47,7 @@ public class GT_MetaTileEntity_TM_microwave extends GT_MetaTileEntity_Multiblock
     private static final Block[] blockType = new Block[]{sBlockCasings4};
     private static final byte[] blockMeta = new byte[]{1};
 
-    private final HatchAdder[] addingMethods = new HatchAdder[]{this::addClassicToMachineList};
+    private final IHatchAdder[] addingMethods = new IHatchAdder[]{this::addClassicToMachineList};
     private static final short[] casingTextures = new short[]{49};
     private static final Block[] blockTypeFallback = new Block[]{sBlockCasings4};
     private static final byte[] blockMetaFallback = new byte[]{1};
@@ -62,13 +61,13 @@ public class GT_MetaTileEntity_TM_microwave extends GT_MetaTileEntity_Multiblock
     //region parameters
     protected Parameters.Group.ParameterIn powerSetting,timerSetting;
     protected Parameters.Group.ParameterOut timerValue,remainingTime;
-    private static final NameFunction<GT_MetaTileEntity_TM_microwave> POWER_NAME = (base, p)-> "Power setting";
-    private static final NameFunction<GT_MetaTileEntity_TM_microwave> TIMER_SETTING_NAME = (base, p)-> "Timer setting";
-    private static final NameFunction<GT_MetaTileEntity_TM_microwave> TIMER_REMAINING_NAME = (base, p)-> "Timer remaining";
-    private static final NameFunction<GT_MetaTileEntity_TM_microwave> TIMER_VALUE_NAME = (base,p)-> "Timer value";
-    private static final StatusFunction<GT_MetaTileEntity_TM_microwave> POWER_STATUS=
+    private static final INameFunction<GT_MetaTileEntity_TM_microwave> POWER_NAME = (base, p)-> "Power setting";
+    private static final INameFunction<GT_MetaTileEntity_TM_microwave> TIMER_SETTING_NAME = (base, p)-> "Timer setting";
+    private static final INameFunction<GT_MetaTileEntity_TM_microwave> TIMER_REMAINING_NAME = (base, p)-> "Timer remaining";
+    private static final INameFunction<GT_MetaTileEntity_TM_microwave> TIMER_VALUE_NAME = (base, p)-> "Timer value";
+    private static final IStatusFunction<GT_MetaTileEntity_TM_microwave> POWER_STATUS=
             (base,p)-> LedStatus.fromLimitsInclusiveOuterBoundary(p.get(),300,1000,1000,Double.POSITIVE_INFINITY);
-    private static final StatusFunction<GT_MetaTileEntity_TM_microwave> TIMER_STATUS=(base,p)->{
+    private static final IStatusFunction<GT_MetaTileEntity_TM_microwave> TIMER_STATUS=(base, p)->{
         double value=p.get();
         if(Double.isNaN(value)) return STATUS_WRONG;
         value=(int)value;
@@ -170,7 +169,7 @@ public class GT_MetaTileEntity_TM_microwave extends GT_MetaTileEntity_Multiblock
         timerValue.set(timerValue.get()+1);
         remainingTime.set(timerSetting.get()-timerValue.get());
         IGregTechTileEntity mte=getBaseMetaTileEntity();
-        double[] xyzOffsets= getTranslatedOffsets(0,-1,2);
+        int[] xyzOffsets= getTranslatedOffsets(0,-1,2);
         double xPos=mte.getXCoord()+0.5f+xyzOffsets[0];
         double yPos=mte.getYCoord()+0.5f+xyzOffsets[1];
         double zPos=mte.getZCoord()+0.5f+xyzOffsets[2];
@@ -221,7 +220,7 @@ public class GT_MetaTileEntity_TM_microwave extends GT_MetaTileEntity_Multiblock
             damagingFactor>>=1;
         } while(damagingFactor>0);
 
-        mOutputItems= itemsToOutput.toArray(new ItemStack[0]);
+        mOutputItems= itemsToOutput.toArray(nullItem);
 
         if(remainingTime.get() <=0) {
             mte.getWorld().playSoundEffect(xPos,yPos,zPos, Reference.MODID+":microwave_ding", 1, 1);

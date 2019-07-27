@@ -2,10 +2,7 @@ package com.github.technus.tectech.thing.metaTileEntity.hatch;
 
 import com.github.technus.tectech.CommonValues;
 import com.github.technus.tectech.Util;
-import com.github.technus.tectech.thing.metaTileEntity.hatch.gui.GT_Container_Param;
-import com.github.technus.tectech.thing.metaTileEntity.hatch.gui.GT_Container_ParamAdv;
-import com.github.technus.tectech.thing.metaTileEntity.hatch.gui.GT_GUIContainer_Param;
-import com.github.technus.tectech.thing.metaTileEntity.hatch.gui.GT_GUIContainer_ParamAdv;
+import com.github.technus.tectech.thing.metaTileEntity.hatch.gui.*;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.enums.Textures;
@@ -54,7 +51,7 @@ public class GT_MetaTileEntity_Hatch_Param extends GT_MetaTileEntity_Hatch {
 
     @Override
     public Object getServerGUI(int aID, InventoryPlayer aPlayerInventory, IGregTechTileEntity aBaseMetaTileEntity) {
-        if (mTier > 7) {
+        if (mTier > 5) {
             return new GT_Container_ParamAdv(aPlayerInventory, aBaseMetaTileEntity);
         }
         return new GT_Container_Param(aPlayerInventory, aBaseMetaTileEntity);
@@ -62,7 +59,7 @@ public class GT_MetaTileEntity_Hatch_Param extends GT_MetaTileEntity_Hatch {
 
     @Override
     public Object getClientGUI(int aID, InventoryPlayer aPlayerInventory, IGregTechTileEntity aBaseMetaTileEntity) {
-        if (mTier > 7) {
+        if (mTier > 5) {
             return new GT_GUIContainer_ParamAdv(aPlayerInventory, aBaseMetaTileEntity);
         }
         return new GT_GUIContainer_Param(aPlayerInventory, aBaseMetaTileEntity);

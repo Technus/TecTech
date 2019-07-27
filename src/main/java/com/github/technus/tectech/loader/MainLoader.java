@@ -6,11 +6,8 @@ import com.github.technus.tectech.compatibility.thaumcraft.elementalMatter.defin
 import com.github.technus.tectech.compatibility.thaumcraft.elementalMatter.definitions.AspectDefinitionCompatEnabled;
 import com.github.technus.tectech.compatibility.thaumcraft.thing.metaTileEntity.multi.EssentiaCompat;
 import com.github.technus.tectech.compatibility.thaumcraft.thing.metaTileEntity.multi.EssentiaCompatEnabled;
-import com.github.technus.tectech.loader.entity.EntityLoader;
 import com.github.technus.tectech.loader.gui.CreativeTabTecTech;
 import com.github.technus.tectech.loader.gui.ModGuiHandler;
-import com.github.technus.tectech.loader.mechanics.ElementalLoader;
-import com.github.technus.tectech.loader.network.NetworkDispatcher;
 import com.github.technus.tectech.loader.recipe.RecipeLoader;
 import com.github.technus.tectech.loader.thing.ComponentLoader;
 import com.github.technus.tectech.loader.thing.MachineLoader;
@@ -49,7 +46,7 @@ import static com.github.technus.tectech.loader.gui.CreativeTabTecTech.creativeT
 import static gregtech.api.enums.GT_Values.W;
 
 public final class MainLoader {
-    public static DamageSource microwaving, elementalPollution;
+    public static DamageSource microwaving, elementalPollution,subspace;
 
     private MainLoader(){}
 
@@ -102,6 +99,7 @@ public final class MainLoader {
         progressBarLoad.step("Add damage types");
         microwaving =new DamageSource("microwaving").setDamageBypassesArmor();
         elementalPollution =new DamageSource("elementalPollution").setDamageBypassesArmor();
+        subspace =new DamageSource("subspace").setDamageBypassesArmor().setDamageIsAbsolute();
         LOGGER.info("Damage types addition Done");
 
         progressBarLoad.step("Register Packet Dispatcher");
@@ -234,14 +232,11 @@ public final class MainLoader {
     }
 
     public static void addAfterGregTechPostLoadRunner() {
-        GregTech_API.sAfterGTPostload.add(new Runnable() {
-            @Override
-            public void run() {
-                if(TecTech.configTecTech.NERF_FUSION) {
-                    FixBrokenFusionRecipes();
-                }
-                GT_MetaTileEntity_EM_collider.setValues(getFuelValue(Materials.Helium.getPlasma(125)));
+        GregTech_API.sAfterGTPostload.add(() -> {
+            if(TecTech.configTecTech.NERF_FUSION) {
+                FixBrokenFusionRecipes();
             }
+            GT_MetaTileEntity_EM_collider.setValues(getFuelValue(Materials.Helium.getPlasma(125)));
         });
     }
 

@@ -7,10 +7,10 @@ import com.github.technus.tectech.thing.metaTileEntity.IConstructable;
 import com.github.technus.tectech.thing.metaTileEntity.hatch.GT_MetaTileEntity_Hatch_EnergyMulti;
 import com.github.technus.tectech.thing.metaTileEntity.hatch.GT_MetaTileEntity_Hatch_InputElemental;
 import com.github.technus.tectech.thing.metaTileEntity.multi.base.GT_MetaTileEntity_MultiblockBase_EM;
-import com.github.technus.tectech.thing.metaTileEntity.multi.base.HatchAdder;
+import com.github.technus.tectech.thing.metaTileEntity.multi.base.IHatchAdder;
 import com.github.technus.tectech.thing.metaTileEntity.multi.base.Parameters;
-import com.github.technus.tectech.thing.metaTileEntity.multi.base.NameFunction;
-import com.github.technus.tectech.thing.metaTileEntity.multi.base.StatusFunction;
+import com.github.technus.tectech.thing.metaTileEntity.multi.base.INameFunction;
+import com.github.technus.tectech.thing.metaTileEntity.multi.base.IStatusFunction;
 import com.github.technus.tectech.thing.metaTileEntity.multi.base.render.TT_RenderedTexture;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -42,14 +42,14 @@ public class GT_MetaTileEntity_EM_decay extends GT_MetaTileEntity_MultiblockBase
     private static Textures.BlockIcons.CustomIcon ScreenOFF;
     private static Textures.BlockIcons.CustomIcon ScreenON;
 
-    private static final double URANIUM_INGOT_MASS_DIFF = 1.6114516E10;
-    private static final double MASS_TO_EU_PARTIAL = ConfigUtil.getFloat(MainConfig.get(), "balance/energy/generator/nuclear") * 3_000_000.0 / URANIUM_INGOT_MASS_DIFF;
-    private static final double MASS_TO_EU_INSTANT= MASS_TO_EU_PARTIAL *20;
+    public static final double URANIUM_INGOT_MASS_DIFF = 1.6114516E10;
+    private static final double URANIUM_MASS_TO_EU_PARTIAL = ConfigUtil.getFloat(MainConfig.get(), "balance/energy/generator/nuclear") * 3_000_000.0 / URANIUM_INGOT_MASS_DIFF;
+    public static final double URANIUM_MASS_TO_EU_INSTANT = URANIUM_MASS_TO_EU_PARTIAL *20;
 
     //region parameters
     protected Parameters.Group.ParameterIn ampereFlow;
-    private static final NameFunction<GT_MetaTileEntity_EM_decay> FLOW_NAME= (base, p)->"Ampere divider";
-    private static final StatusFunction<GT_MetaTileEntity_EM_decay> FLOW_STATUS= (base, p)->{
+    private static final INameFunction<GT_MetaTileEntity_EM_decay> FLOW_NAME= (base, p)->"Ampere divider";
+    private static final IStatusFunction<GT_MetaTileEntity_EM_decay> FLOW_STATUS= (base, p)->{
         if(base.eAmpereFlow<=0){
             return STATUS_TOO_LOW;
         }
@@ -71,7 +71,7 @@ public class GT_MetaTileEntity_EM_decay extends GT_MetaTileEntity_MultiblockBase
     };
     private static final Block[] blockType = new Block[]{sBlockCasingsTT, sBlockCasingsTT, sBlockCasingsTT ,sBlockCasingsTT};
     private static final byte[] blockMeta = new byte[]{4, 5, 8, 6};
-    private final HatchAdder[] addingMethods = new HatchAdder[]{this::addClassicToMachineList, this::addElementalToMachineList};
+    private final IHatchAdder[] addingMethods = new IHatchAdder[]{this::addClassicToMachineList, this::addElementalToMachineList};
     private static final short[] casingTextures = new short[]{textureOffset, textureOffset + 4};
     private static final Block[] blockTypeFallback = new Block[]{sBlockCasingsTT, sBlockCasingsTT};
     private static final byte[] blockMetaFallback = new byte[]{0, 4};
@@ -164,7 +164,7 @@ public class GT_MetaTileEntity_EM_decay extends GT_MetaTileEntity_MultiblockBase
         for(cElementalInstanceStack stack:outputEM[0].values()){
             if (stack.getEnergy() == 0 && stack.definition.decayMakesEnergy(1)
                     && getBaseMetaTileEntity().decreaseStoredEnergyUnits(
-                            (long) (stack.getEnergySettingCost(1) * MASS_TO_EU_INSTANT), false)) {
+                            (long) (stack.getEnergySettingCost(1) * URANIUM_MASS_TO_EU_INSTANT), false)) {
                 stack.setEnergy(1);
             }else if(!stack.definition.decayMakesEnergy(stack.getEnergy())){
                 outputEM[0].remove(stack.definition);
@@ -175,7 +175,7 @@ public class GT_MetaTileEntity_EM_decay extends GT_MetaTileEntity_MultiblockBase
 
         float preMass=outputEM[0].getMass();
         outputEM[0].tickContent(1,0,1);
-        double energyDose=((preMass-outputEM[0].getMass())* MASS_TO_EU_PARTIAL);
+        double energyDose=((preMass-outputEM[0].getMass())* URANIUM_MASS_TO_EU_PARTIAL);
         eAmpereFlow=(long) ampereFlow.get();
         if (eAmpereFlow <= 0) {
             mEUt=0;
