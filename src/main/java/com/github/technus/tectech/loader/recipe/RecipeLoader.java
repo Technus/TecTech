@@ -111,10 +111,9 @@ public class RecipeLoader implements Runnable {
 
         if (Loader.isModLoaded(Reference.DREAMCRAFT)) {
             new DreamCraftRecipeLoader().run();//init recipes for GTNH version
-        } else 
-        if (Loader.isModLoaded(Reference.SPARTAKCORE)) {
+        } else if (Loader.isModLoaded(Reference.SPARTAKCORE)) {
         	new SpartakCoreRecipeLoader().run();//init recipes for SpartakCore version
-        }else {
+        } else {
             new BloodyRecipeLoader().run();//init recipes for NON-GTNH version
         }
     }
