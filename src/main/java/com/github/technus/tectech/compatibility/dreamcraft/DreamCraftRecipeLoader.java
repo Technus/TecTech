@@ -951,7 +951,7 @@ public class DreamCraftRecipeLoader implements Runnable {
                         GT_OreDictUnificator.get(OrePrefixes.plate, Materials.Infinity, 6L),
                         ItemList.Gravistar.get(8L),
                         ItemList.Emitter_UEV.get(4L),
-                        new Object[]{OrePrefixes.circuit.get(Materials.Bio), 8L},
+                        new Object[]{OrePrefixes.circuit.get(Materials.Nano), 1},
                         GT_OreDictUnificator.get(OrePrefixes.wireFine, Materials.Tritanium, 64L),
                         GT_OreDictUnificator.get(OrePrefixes.wireFine, Materials.Tritanium, 64L),
                         GT_OreDictUnificator.get(OrePrefixes.wireFine, Materials.Tritanium, 64L),
