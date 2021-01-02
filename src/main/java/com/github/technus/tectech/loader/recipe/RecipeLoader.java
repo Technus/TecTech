@@ -10,11 +10,9 @@ import com.github.technus.tectech.thing.casing.TT_Container_Casings;
 import com.github.technus.tectech.thing.item.ConstructableTriggerItem;
 import com.github.technus.tectech.thing.item.EuMeterGT;
 import com.github.technus.tectech.thing.item.FrontRotationTriggerItem;
+import com.github.technus.tectech.thing.item.PowerPassUpgradeItem;
 import cpw.mods.fml.common.Loader;
-import gregtech.api.enums.Dyes;
-import gregtech.api.enums.ItemList;
-import gregtech.api.enums.Materials;
-import gregtech.api.enums.OrePrefixes;
+import gregtech.api.enums.*;
 import gregtech.api.util.GT_ModHandler;
 import gregtech.api.util.GT_OreDictUnificator;
 import gregtech.api.util.GT_Utility;
@@ -116,6 +114,22 @@ public class RecipeLoader implements Runnable {
         } else {
             new BloodyRecipeLoader().run();//init recipes for NON-GTNH version
         }
+
+        GT_Values.RA.addAssemblylineRecipe(
+                ItemList.Cover_EnergyDetector.get(1L),
+                512,
+                new Object[]{
+                        ItemList.Cover_EnergyDetector.get(1L),
+                        CustomItemList.Machine_Multi_Transformer.get(1L),
+                        ItemList.Circuit_Chip_UHPIC.get(1L)
+                },
+                new FluidStack[]{
+                        Materials.SolderingAlloy.getMolten(144),
+                },
+                new ItemStack(PowerPassUpgradeItem.POWER_PASS_ENABLER),
+                512,
+                30_720
+        );
     }
 }
 

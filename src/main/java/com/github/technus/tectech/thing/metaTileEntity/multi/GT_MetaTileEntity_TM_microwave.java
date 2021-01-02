@@ -2,8 +2,8 @@ package com.github.technus.tectech.thing.metaTileEntity.multi;
 
 import com.github.technus.tectech.Reference;
 import com.github.technus.tectech.mechanics.constructable.IConstructable;
-import com.github.technus.tectech.mechanics.structure.adders.IHatchAdder;
 import com.github.technus.tectech.mechanics.structure.Structure;
+import com.github.technus.tectech.mechanics.structure.adders.IHatchAdder;
 import com.github.technus.tectech.thing.metaTileEntity.multi.base.*;
 import com.github.technus.tectech.thing.metaTileEntity.multi.base.render.TT_RenderedExtendedFacingTexture;
 import com.github.technus.tectech.util.CommonValues;
@@ -37,7 +37,7 @@ import static net.minecraft.util.StatCollector.translateToLocal;
 /**
  * Created by danie_000 on 17.12.2016.
  */
-public class GT_MetaTileEntity_TM_microwave extends GT_MetaTileEntity_MultiblockBase_EM implements IConstructable {
+public class GT_MetaTileEntity_TM_microwave extends GT_MetaTileEntity_PowerPassUpgradeable_EM implements IConstructable {
     //region variables
     private boolean hasBeenPausedThisCycle = false;
     //endregion
@@ -198,12 +198,12 @@ public class GT_MetaTileEntity_TM_microwave extends GT_MetaTileEntity_Multiblock
 
     @Override
     public Object getServerGUI(int aID, InventoryPlayer aPlayerInventory, IGregTechTileEntity aBaseMetaTileEntity) {
-        return new GT_Container_MultiMachineEM(aPlayerInventory, aBaseMetaTileEntity, false, true, true);
+        return new GT_Container_MultiMachineEM(aPlayerInventory, aBaseMetaTileEntity, isPowerPassUpgraded(), true, true);
     }
 
     @Override
     public Object getClientGUI(int aID, InventoryPlayer aPlayerInventory, IGregTechTileEntity aBaseMetaTileEntity) {
-        return new GT_GUIContainer_MultiMachineEM(aPlayerInventory, aBaseMetaTileEntity, getLocalName(), "EMDisplay.png", false, true, true);//todo texture
+        return new GT_GUIContainer_MultiMachineEM(aPlayerInventory, aBaseMetaTileEntity, getLocalName(), "EMDisplay.png", true, true);//todo texture
     }
 
     @Override

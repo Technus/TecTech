@@ -13,6 +13,8 @@ tile.reactorSim.desc.0=Fission Reaction Uncertainty Resolver 9001
 tile.reactorSim.desc.1=Explodes, but not as much...
 
 #Items
+item.PowerPassEnabler.name=Power Pass Enabler
+
 item.em.programmer.name=AVR programmer
 item.em.programmer.desc.0=Current PC
 item.em.programmer.desc.1=Awoken

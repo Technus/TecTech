@@ -85,10 +85,13 @@ repositories {
         name = "IC2 maven"
         url = "http://maven.ic2.player.to/"
     }
-	maven { // Baubles and Thaumcraft
-        name 'MC Mod Dev maven'
-        url 'https://maven.mcmoddev.com/'
-    }
+	//maven { // Baubles and Thaumcraft
+    //
+    // its dead john.
+    //
+    //    name 'MC Mod Dev maven'
+    //    url 'https://maven.mcmoddev.com/'
+    //}
 	maven { // OpenComputers
         name "OpenComputers maven"
         url "http://maven.cil.li/"
@@ -114,8 +117,6 @@ dependencies {
     compile "codechicken:CodeChickenLib:${config.minecraft.version}-${config.codechickenlib.version}:dev"
     compile "codechicken:CodeChickenCore:${config.minecraft.version}-${config.codechickencore.version}:dev"
     compile "codechicken:NotEnoughItems:${config.minecraft.version}-${config.nei.version}:dev"
-	compile "com.azanor:Baubles:${config.minecraft.version}-${config.baubles.version}"
-	compile "com.azanor:Thaumcraft:${config.minecraft.version}-${config.thaumcraft.version}:deobf"
 	compile "li.cil.oc:OpenComputers:MC${config.minecraft.version}-${config.opencomputers.version}:dev"
 	compile "com.enderio.core:EnderCore:${config.minecraft.version}-${config.endercore.version}"
 	compile ("com.enderio:EnderIO:${config.minecraft.version}-${config.enderio.version}"){
@@ -130,9 +131,11 @@ dependencies {
 	compile "micdoodle8.mods:Galacticraft-Planets:${config.galacticraft.version}:Dev"
 	compile "micdoodle8.mods:Galacticraft:${config.galacticraft.version}:API"
 	compile "com.mod-buildcraft:buildcraft:${config.buildcraft.version}:dev"
+    compile "com.azanor.baubles:Baubles:${config.minecraft.version}-${config.baubles.version}:deobf"
+    compile "thaumcraft:Thaumcraft:${config.minecraft.version}-${config.thaumcraft.version}:dev"
 
     //TODO Re-work the formatting and add documentation
-    runtime "curse.maven:cofh-core:${config.cofh_core_version}"
+    //runtime "curse.maven:cofh-core:${config.cofh_core_version}"
 	//Ivy
 	//compile name: 'CoFHCore', version: config.cofhcore.version, ext: 'jar'
 

@@ -3,8 +3,8 @@ package com.github.technus.tectech.thing.metaTileEntity.multi;
 import com.github.technus.tectech.Reference;
 import com.github.technus.tectech.mechanics.constructable.IConstructable;
 import com.github.technus.tectech.mechanics.dataTransport.InventoryDataPacket;
-import com.github.technus.tectech.mechanics.structure.adders.IHatchAdder;
 import com.github.technus.tectech.mechanics.structure.Structure;
+import com.github.technus.tectech.mechanics.structure.adders.IHatchAdder;
 import com.github.technus.tectech.thing.metaTileEntity.hatch.GT_MetaTileEntity_Hatch_InputDataItems;
 import com.github.technus.tectech.thing.metaTileEntity.hatch.GT_MetaTileEntity_Hatch_OutputDataItems;
 import com.github.technus.tectech.thing.metaTileEntity.multi.base.GT_Container_MultiMachineEM;
@@ -135,7 +135,7 @@ public class GT_MetaTileEntity_EM_dataBank extends GT_MetaTileEntity_MultiblockB
 
     @Override
     public Object getClientGUI(int aID, InventoryPlayer aPlayerInventory, IGregTechTileEntity aBaseMetaTileEntity) {
-        return new GT_GUIContainer_MultiMachineEM(aPlayerInventory, aBaseMetaTileEntity, getLocalName(), "EMDisplay.png", true, false, true);//todo texture
+        return new GT_GUIContainer_MultiMachineEM(aPlayerInventory, aBaseMetaTileEntity, getLocalName(), "EMDisplay.png", false, true);//todo texture
     }
 
     @Override

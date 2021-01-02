@@ -4,8 +4,8 @@ import cofh.api.energy.IEnergyContainerItem;
 import com.github.technus.tectech.Reference;
 import com.github.technus.tectech.TecTech;
 import com.github.technus.tectech.mechanics.constructable.IConstructable;
-import com.github.technus.tectech.mechanics.structure.adders.IHatchAdder;
 import com.github.technus.tectech.mechanics.structure.Structure;
+import com.github.technus.tectech.mechanics.structure.adders.IHatchAdder;
 import com.github.technus.tectech.thing.metaTileEntity.multi.base.GT_Container_MultiMachineEM;
 import com.github.technus.tectech.thing.metaTileEntity.multi.base.GT_GUIContainer_MultiMachineEM;
 import com.github.technus.tectech.thing.metaTileEntity.multi.base.GT_MetaTileEntity_MultiblockBase_EM;
@@ -172,7 +172,7 @@ public class GT_MetaTileEntity_EM_infuser extends GT_MetaTileEntity_MultiblockBa
 
     @Override
     public Object getClientGUI(int aID, InventoryPlayer aPlayerInventory, IGregTechTileEntity aBaseMetaTileEntity) {
-        return new GT_GUIContainer_MultiMachineEM(aPlayerInventory, aBaseMetaTileEntity, getLocalName(), "EMDisplay.png", true, false, true);
+        return new GT_GUIContainer_MultiMachineEM(aPlayerInventory, aBaseMetaTileEntity, getLocalName(), "EMDisplay.png", false, true);
     }
 
     public final static ResourceLocation activitySound = new ResourceLocation(Reference.MODID + ":fx_whooum");
