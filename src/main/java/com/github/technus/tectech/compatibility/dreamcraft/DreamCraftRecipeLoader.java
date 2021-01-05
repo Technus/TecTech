@@ -1224,9 +1224,6 @@ public class DreamCraftRecipeLoader implements Runnable {
                 		ItemList.Energy_LapotronicOrb2.get(1L),
                 		ItemList.Duct_Tape.get(64L),
                 		ItemList.Duct_Tape.get(64L),
-                		ItemList.Duct_Tape.get(64L),
-                		ItemList.Duct_Tape.get(64L),
-                		ItemList.Duct_Tape.get(64L),
                 		GT_OreDictUnificator.get(OrePrefixes.wireFine, Materials.Americium, 64L),
         		}, new FluidStack[]{
         				Materials.Lubricant.getFluid(256000),
