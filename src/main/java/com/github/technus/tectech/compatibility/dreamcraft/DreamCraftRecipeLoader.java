@@ -1216,10 +1216,10 @@ public class DreamCraftRecipeLoader implements Runnable {
         //Debug maintenance hatch
         TT_recipeAdder.addResearchableAssemblylineRecipe(ItemList.Hatch_AutoMaintenance.get(1L),
                 2764800, 128, 500000, 6, new Object[]{
-                		ItemList.Hatch_AutoMaintenance.get(4L),
-                		ItemList.Robot_Arm_UV.get(4L),
-                		ItemList.Electric_Pump_UV.get(4L),
-                		ItemList.Conveyor_Module_UV.get(4L),
+                		ItemList.Hatch_AutoMaintenance.get(1L),
+                		ItemList.Robot_Arm_UV.get(1L),
+                		ItemList.Electric_Pump_UV.get(1L),
+                		ItemList.Conveyor_Module_UV.get(1L),
                 		new Object[]{OrePrefixes.circuit.get(Materials.Superconductor), 4L},
                 		ItemList.Energy_LapotronicOrb2.get(1L),
                 		ItemList.Duct_Tape.get(64L),
