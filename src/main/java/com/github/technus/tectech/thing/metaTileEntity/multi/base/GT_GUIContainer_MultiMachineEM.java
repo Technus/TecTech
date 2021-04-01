@@ -21,21 +21,25 @@ public class GT_GUIContainer_MultiMachineEM extends GT_GUIContainerMetaTile_Mach
     private final String mName;
     private static byte counter = 0;
     private final boolean eSafeVoidButton, allowedToWorkButton,ePowerPassButton;
-    private final GT_Container_MultiMachineEM mContainer;
+    protected final GT_Container_MultiMachineEM mContainer;
 
-    public GT_GUIContainer_MultiMachineEM(InventoryPlayer aInventoryPlayer, IGregTechTileEntity aTileEntity, String aName, String aTextureFile,boolean enablePowerPass, boolean enableSafeVoid, boolean enablePowerButton) {
-        super(new GT_Container_MultiMachineEM(aInventoryPlayer, aTileEntity), RES_PATH_GUI + "multimachines/" + (aTextureFile == null ? "MultiblockDisplay" : aTextureFile));
-        mContainer=(GT_Container_MultiMachineEM)super.mContainer;
+    public GT_GUIContainer_MultiMachineEM(InventoryPlayer aInventoryPlayer, IGregTechTileEntity aTileEntity, String aName, String aTextureFile, boolean enablePowerPass, boolean enableSafeVoid, boolean enablePowerButton) {
+        this(new GT_Container_MultiMachineEM(aInventoryPlayer, aTileEntity), aName, aTextureFile, enablePowerPass, enableSafeVoid, enablePowerButton);
+    }
+
+    public GT_GUIContainer_MultiMachineEM(InventoryPlayer aInventoryPlayer, IGregTechTileEntity aTileEntity, String aName, String aTextureFile) {
+        this(aInventoryPlayer,aTileEntity,aName,aTextureFile,true,true,true);
+    }
+
+    protected GT_GUIContainer_MultiMachineEM(GT_Container_MultiMachineEM aContainer, String aName, String aTextureFile, boolean enablePowerPass, boolean enableSafeVoid, boolean enablePowerButton) {
+        super(aContainer, RES_PATH_GUI + "multimachines/" + (aTextureFile == null ? "MultiblockDisplay" : aTextureFile));
+        mContainer = aContainer;
         mName = aName;
         ePowerPassButton=enablePowerPass;
         eSafeVoidButton=enableSafeVoid;
         allowedToWorkButton=enablePowerButton;
         ySize= 192;
         xSize = 198;
-    }
-
-    public GT_GUIContainer_MultiMachineEM(InventoryPlayer aInventoryPlayer, IGregTechTileEntity aTileEntity, String aName, String aTextureFile) {
-        this(aInventoryPlayer,aTileEntity,aName,aTextureFile,true,true,true);
     }
 
     @Override
