@@ -42,12 +42,12 @@ public abstract class GT_MetaTileEntity_Hatch_ElementalContainer extends GT_Meta
 
     private String clientLocale = "en_US";
 
-    protected EMInstanceStackMap content      = new EMInstanceStackMap();
+    protected EMInstanceStackMap content        = new EMInstanceStackMap();
     //float lifeTimeMult=1f;
-    public    int                postEnergize = 0;
-    public double overflowMatter = 0f;
-    public short id = -1;
-    private byte deathDelay = 2;
+    public    int                postEnergize   = 0;
+    public    double             overflowMatter = 0f;
+    public    short              id             = -1;
+    private   byte               deathDelay     = 2;
 
     protected GT_MetaTileEntity_Hatch_ElementalContainer(int aID, String aName, String aNameRegional, int aTier, String descr) {
         super(aID, aName, aNameRegional, aTier, 0, descr);
@@ -93,10 +93,10 @@ public abstract class GT_MetaTileEntity_Hatch_ElementalContainer extends GT_Meta
         super.loadNBTData(aNBT);
         postEnergize = aNBT.getInteger("postEnergize");
         //lifeTimeMult=aNBT.getFloat("lifeTimeMult");
-        overflowMatter = aNBT.getFloat("overflowMatter")+aNBT.getDouble("OverflowMatter");
+        overflowMatter = aNBT.getDouble("OverflowMatter");
         id = aNBT.getShort("eID");
         try {
-            content = EMInstanceStackMap.fromNBT(TecTech.definitionsRegistry,aNBT.getCompoundTag("eM_Stacks"));
+            content = EMInstanceStackMap.fromNBT(TecTech.definitionsRegistry, aNBT.getCompoundTag("eM_Stacks"));
         } catch (EMException e) {
             if (DEBUG_MODE) {
                 e.printStackTrace();
@@ -113,7 +113,7 @@ public abstract class GT_MetaTileEntity_Hatch_ElementalContainer extends GT_Meta
             byte Tick = (byte) (aTick % 20);
             if (DECAY_AT == Tick) {
                 purgeOverflow();
-                content.tickContent(1, postEnergize,1);//Hatches don't life time mult things
+                content.tickContent(1, postEnergize, 1);//Hatches don't life time mult things
                 purgeOverflow();
             } else if (OVERFLOW_AT == Tick) {
                 if (overflowMatter <= 0) {
@@ -162,14 +162,12 @@ public abstract class GT_MetaTileEntity_Hatch_ElementalContainer extends GT_Meta
         }
     }
 
-    public void moveAround(IGregTechTileEntity aBaseMetaTileEntity) {
-    }
+    public abstract void moveAround(IGregTechTileEntity aBaseMetaTileEntity);
 
     @Override
     public EMInstanceStackMap getContentHandler() {
         return content;
     }
-
 
     @Override
     public boolean isFacingValid(byte aFacing) {
@@ -248,7 +246,7 @@ public abstract class GT_MetaTileEntity_Hatch_ElementalContainer extends GT_Meta
                 if (content == null || content.size() == 0) {
                     return new String[]{translateToLocalFormatted("tt.keyword.ID", clientLocale) + ": " + EnumChatFormatting.AQUA + id, translateToLocalFormatted("tt.keyphrase.No_Stacks", clientLocale)};
                 } else {
-                    String[] lines = content.getElementalInfo();
+                    String[] lines  = content.getElementalInfo();
                     String[] output = new String[lines.length + 1];
                     output[0] = translateToLocalFormatted("tt.keyword.ID", clientLocale) + ": " + EnumChatFormatting.AQUA + id;
                     System.arraycopy(lines, 0, output, 1, lines.length);

@@ -25,6 +25,10 @@ public class GT_MetaTileEntity_Hatch_InputElemental extends GT_MetaTileEntity_Ha
     }
 
     @Override
+    public void moveAround(IGregTechTileEntity aBaseMetaTileEntity) {
+    }
+
+    @Override
     public MetaTileEntity newMetaEntity(IGregTechTileEntity aTileEntity) {
         return new GT_MetaTileEntity_Hatch_InputElemental(mName, mTier, mDescription, mTextures);
     }
