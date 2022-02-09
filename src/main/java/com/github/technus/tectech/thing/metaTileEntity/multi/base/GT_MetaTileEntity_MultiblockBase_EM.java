@@ -43,8 +43,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 
-import static com.github.technus.tectech.loader.TecTechConfig.DEBUG_MODE;
-import static com.github.technus.tectech.loader.TecTechConfig.POWERLESS_MODE;
+import static com.github.technus.tectech.loader.TecTechConfig.*;
 import static com.github.technus.tectech.thing.casing.GT_Block_CasingsTT.texturePage;
 import static com.github.technus.tectech.util.CommonValues.*;
 import static com.github.technus.tectech.util.DoubleCount.div;
@@ -1055,8 +1054,12 @@ public abstract class GT_MetaTileEntity_MultiblockBase_EM extends GT_MetaTileEnt
                 hatch.input1D = parametrization.iParamsOut[hatchId + 10];
             }
         }
-        for (GT_MetaTileEntity_Hatch_Uncertainty uncertainty : eUncertainHatches) {
-            eCertainStatus = uncertainty.update(eCertainMode);
+        if(CERTAIN_MODE){
+            eCertainStatus=0;
+        }else{
+            for (GT_MetaTileEntity_Hatch_Uncertainty uncertainty : eUncertainHatches) {
+                eCertainStatus = uncertainty.update(eCertainMode);
+            }
         }
         eAvailableData = getAvailableData_EM();
         parametersStatusesWrite_EM(busy);
@@ -1094,7 +1097,7 @@ public abstract class GT_MetaTileEntity_MultiblockBase_EM extends GT_MetaTileEnt
     }
 
     public boolean onRunningTickCheck_EM(ItemStack aStack) {
-        if (eRequiredData > eAvailableData) {
+        if (COMPUTATIONLESS_MODE || eRequiredData > eAvailableData) {
             if (energyFlowOnRunningTick_EM(aStack, false)) {
                 stopMachine();
             }
@@ -1104,7 +1107,7 @@ public abstract class GT_MetaTileEntity_MultiblockBase_EM extends GT_MetaTileEnt
     }
 
     public boolean onRunningTickCheck(ItemStack aStack) {
-        if (eRequiredData > eAvailableData) {
+        if (COMPUTATIONLESS_MODE || eRequiredData > eAvailableData) {
             if (energyFlowOnRunningTick(aStack, false)) {
                 stopMachine();
             }
