@@ -1,4 +1,4 @@
-package com.github.technus.tectech.thing.item;
+package com.github.technus.tectech.rendering.EOH;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import net.minecraft.block.Block;
@@ -11,11 +11,11 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 
 import static com.github.technus.tectech.Reference.MODID;
-import static com.github.technus.tectech.thing.block.RenderEyeOfHarmony.STAR_LAYER_0;
-import static com.github.technus.tectech.thing.block.RenderEyeOfHarmony.STAR_LAYER_1;
-import static com.github.technus.tectech.thing.block.RenderEyeOfHarmony.STAR_LAYER_2;
-import static com.github.technus.tectech.thing.block.RenderEyeOfHarmony.spaceModel;
-import static com.github.technus.tectech.thing.block.RenderEyeOfHarmony.starModel;
+import static com.github.technus.tectech.rendering.EOH.EOH_TESR.STAR_LAYER_0;
+import static com.github.technus.tectech.rendering.EOH.EOH_TESR.STAR_LAYER_1;
+import static com.github.technus.tectech.rendering.EOH.EOH_TESR.STAR_LAYER_2;
+import static com.github.technus.tectech.rendering.EOH.EOH_TESR.spaceModel;
+import static com.github.technus.tectech.rendering.EOH.EOH_TESR.starModel;
 import static java.lang.Math.pow;
 
 public abstract class EOH_RenderingUtils {

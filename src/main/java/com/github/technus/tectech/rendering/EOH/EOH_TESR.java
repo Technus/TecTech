@@ -1,5 +1,6 @@
-package com.github.technus.tectech.thing.block;
+package com.github.technus.tectech.rendering.EOH;
 
+import com.github.technus.tectech.thing.block.TileEyeOfHarmony;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
@@ -10,11 +11,11 @@ import net.minecraftforge.client.model.IModelCustom;
 import org.lwjgl.opengl.GL11;
 
 import static com.github.technus.tectech.Reference.MODID;
-import static com.github.technus.tectech.thing.item.EOH_RenderingUtils.renderBlockInWorld;
-import static com.github.technus.tectech.thing.item.EOH_RenderingUtils.renderOuterSpaceShell;
-import static com.github.technus.tectech.thing.item.EOH_RenderingUtils.renderStar;
+import static com.github.technus.tectech.rendering.EOH.EOH_RenderingUtils.renderBlockInWorld;
+import static com.github.technus.tectech.rendering.EOH.EOH_RenderingUtils.renderOuterSpaceShell;
+import static com.github.technus.tectech.rendering.EOH.EOH_RenderingUtils.renderStar;
 
-public class RenderEyeOfHarmony extends TileEntitySpecialRenderer {
+public class EOH_TESR extends TileEntitySpecialRenderer {
 
     public static final ResourceLocation STAR_LAYER_0 = new ResourceLocation(MODID, "models/StarLayer0.png");
     public static final ResourceLocation STAR_LAYER_1 = new ResourceLocation(MODID, "models/StarLayer1.png");
@@ -22,7 +23,7 @@ public class RenderEyeOfHarmony extends TileEntitySpecialRenderer {
     public static IModelCustom starModel;
     public static IModelCustom spaceModel;
 
-    public RenderEyeOfHarmony() {
+    public EOH_TESR() {
         starModel = AdvancedModelLoader.loadModel(new ResourceLocation(MODID, "models/Star.obj"));
         spaceModel = AdvancedModelLoader.loadModel(new ResourceLocation(MODID, "models/Space.obj"));
     }
@@ -39,7 +40,7 @@ public class RenderEyeOfHarmony extends TileEntitySpecialRenderer {
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDisable(GL11.GL_BLEND);
 
-        // Star shell.
+        // Space shell.
         renderOuterSpaceShell();
 
         // Render the planets.

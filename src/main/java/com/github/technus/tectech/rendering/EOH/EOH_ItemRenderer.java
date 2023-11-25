@@ -1,9 +1,9 @@
-package com.github.technus.tectech.thing.item;
+package com.github.technus.tectech.rendering.EOH;
 
-import static com.github.technus.tectech.thing.block.RenderEyeOfHarmony.STAR_LAYER_0;
-import static com.github.technus.tectech.thing.block.RenderEyeOfHarmony.STAR_LAYER_1;
-import static com.github.technus.tectech.thing.block.RenderEyeOfHarmony.STAR_LAYER_2;
-import static com.github.technus.tectech.thing.block.RenderEyeOfHarmony.starModel;
+import static com.github.technus.tectech.rendering.EOH.EOH_TESR.STAR_LAYER_0;
+import static com.github.technus.tectech.rendering.EOH.EOH_TESR.STAR_LAYER_1;
+import static com.github.technus.tectech.rendering.EOH.EOH_TESR.STAR_LAYER_2;
+import static com.github.technus.tectech.rendering.EOH.EOH_TESR.starModel;
 import static java.lang.Math.pow;
 
 import net.minecraft.item.ItemStack;
@@ -14,7 +14,7 @@ import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.client.FMLClientHandler;
 
-public class RenderEyeOfHarmonyItem implements IItemRenderer {
+public class EOH_ItemRenderer implements IItemRenderer {
 
     @Override
     public boolean handleRenderType(ItemStack item, ItemRenderType type) {
