@@ -5,6 +5,7 @@ import static com.google.common.math.IntMath.pow;
 import static gregtech.api.GregTech_API.getUnificatedOreDictStack;
 import static gregtech.api.enums.Mods.NewHorizonsCoreMod;
 import static gregtech.api.util.GT_ModHandler.getModItem;
+import static gregtech.api.util.GT_Utility.getPlasmaFuelValueInEUPerLiterFromFluid;
 import static gregtech.api.util.GT_Utility.getPlasmaFuelValueInEUPerLiterFromMaterial;
 import static java.lang.Math.min;
 
@@ -17,6 +18,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -149,8 +152,8 @@ public class EyeOfHarmonyRecipe {
 
         // If DeepDark then it should output all plasmas involved in making exotic catalyst.
         if (rocketTier == 9) {
-            for (Materials material : VALID_PLASMAS) {
-                fluidStackLongArrayList.add(new FluidStackLong(material.getPlasma(plasmaAmount), plasmaAmount));
+            for (Fluid fluid : VALID_PLASMAS) {
+                fluidStackLongArrayList.add(new FluidStackLong(new FluidStack(fluid, plasmaAmount), plasmaAmount));
             }
         } else {
             // --- Output and process fluids of the recipe.
@@ -459,34 +462,36 @@ public class EyeOfHarmonyRecipe {
         return 3.85;
     }
 
-    private static final List<Materials> VALID_PLASMAS = Stream.of(
-            Materials.Helium,
-            Materials.Iron,
-            Materials.Calcium,
-            Materials.Niobium,
-            Materials.Nitrogen,
-            Materials.Zinc,
-            Materials.Silver,
-            Materials.Titanium,
-            Materials.Radon,
-            Materials.Nickel,
-            Materials.Boron,
-            Materials.Sulfur,
-            Materials.Americium,
-            Materials.Bismuth,
-            Materials.Oxygen,
-            Materials.Tin).collect(Collectors.toList());
+    private static final List<Fluid> VALID_PLASMAS = Stream.of(
+            Materials.Helium.getPlasma(1).getFluid(),
+            Materials.Iron.getPlasma(1).getFluid(),
+            Materials.Calcium.getPlasma(1).getFluid(),
+            Materials.Niobium.getPlasma(1).getFluid(),
+            Materials.Nitrogen.getPlasma(1).getFluid(),
+            Materials.Zinc.getPlasma(1).getFluid(),
+            Materials.Silver.getPlasma(1).getFluid(),
+            Materials.Titanium.getPlasma(1).getFluid(),
+            Materials.Radon.getPlasma(1).getFluid(),
+            Materials.Nickel.getPlasma(1).getFluid(),
+            Materials.Boron.getPlasma(1).getFluid(),
+            Materials.Sulfur.getPlasma(1).getFluid(),
+            Materials.Americium.getPlasma(1).getFluid(),
+            Materials.Bismuth.getPlasma(1).getFluid(),
+            Materials.Oxygen.getPlasma(1).getFluid(),
+            Materials.Tin.getPlasma(1).getFluid(),
+            FluidRegistry.getFluid("plasma.fermium"),
+            FluidRegistry.getFluid("plasma.neptunium")
+    ).collect(Collectors.toList());
 
     private static final HashMap<String, Long> plasmaEnergyMap = new HashMap<>() {
-
-        private static final long serialVersionUID = 7933945171103801933L;
-
         {
-            VALID_PLASMAS.forEach(
-                    (material -> put(
-                            material.getPlasma(1).getFluid().getUnlocalizedName(),
-                            (long) (getPlasmaFuelValueInEUPerLiterFromMaterial(material)
-                                    * getMaxPlasmaTurbineEfficiency()))));
+            for (Fluid fluid : VALID_PLASMAS) {
+                if (fluid == null) continue;
+
+                long preTurbinePlasmaValue = getPlasmaFuelValueInEUPerLiterFromFluid(new FluidStack(fluid, 1));
+
+                put(fluid.getUnlocalizedName(), (long) (preTurbinePlasmaValue * getMaxPlasmaTurbineEfficiency()));
+            }
         }
     };
 }
