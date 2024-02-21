@@ -39,7 +39,7 @@ import gregtech.nei.formatter.INEISpecialInfoFormatter;
 public class EyeOfHarmonyFrontend extends RecipeMapFrontend {
 
     private static final int xDirMaxCount = 9;
-    private static final int itemRows = 9, fluidRows = 2;
+    private static final int itemRows = 8, fluidRows = 3;
     public static final int maxItemInputs = 1, maxItemOutputs = xDirMaxCount * itemRows, maxFluidInputs = 0,
             maxFluidOutputs = xDirMaxCount * fluidRows;
     private static final int yOrigin = 8;
@@ -58,7 +58,7 @@ public class EyeOfHarmonyFrontend extends RecipeMapFrontend {
         return UIHelper.getGridPositions(itemInputCount, 79, yOrigin, 1, 1);
     }
 
-    public static final int maxItemsToRender = 80;
+    public static final int maxItemsToRender = 71;
 
     @Override
     public List<Pos2d> getItemOutputPositions(int itemOutputCount) {
@@ -72,7 +72,7 @@ public class EyeOfHarmonyFrontend extends RecipeMapFrontend {
 
     @Override
     public List<Pos2d> getFluidOutputPositions(int fluidOutputCount) {
-        return UIHelper.getGridPositions(fluidOutputCount, 7, yOrigin + 13 * 17 - 7 - 16, xDirMaxCount, 3);
+        return UIHelper.getGridPositions(fluidOutputCount, 7, yOrigin + 12 * 17 - 7 - 15, xDirMaxCount, 3);
     }
 
     @Override
