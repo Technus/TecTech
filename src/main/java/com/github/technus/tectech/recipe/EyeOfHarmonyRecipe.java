@@ -153,6 +153,7 @@ public class EyeOfHarmonyRecipe {
         // If DeepDark then it should output all plasmas involved in making exotic catalyst.
         if (rocketTier == 9) {
             for (Fluid fluid : VALID_PLASMAS) {
+                if (fluid == null) continue; // Safeguard for dev environment.
                 fluidStackLongArrayList.add(new FluidStackLong(new FluidStack(fluid, plasmaAmount), plasmaAmount));
             }
         } else {
@@ -420,7 +421,10 @@ public class EyeOfHarmonyRecipe {
         ArrayList<FluidStack> plasmaList = new ArrayList<>();
 
         for (Pair<Materials, Long> pair : planetList) {
-            if (VALID_PLASMAS.contains(pair.getLeft())) {
+            FluidStack plasma = pair.getLeft().getPlasma(1);
+            if (plasma == null) continue;
+
+            if (VALID_PLASMAS.contains(plasma.getFluid())) {
                 plasmaList.add(pair.getLeft().getPlasma(1));
             }
         }
